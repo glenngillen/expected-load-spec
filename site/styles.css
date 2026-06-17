@@ -14,6 +14,7 @@
   --code-text: #e8eaff;
   --radius: 14px;
   --max: 1080px;
+  --gutter: clamp(1rem, 4vw, 2.5rem);
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", Menlo, Consolas, monospace;
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
@@ -66,10 +67,11 @@ pre code { background: none; color: inherit; padding: 0; border-radius: 0; font-
 
 /* ---------- Layout ---------- */
 main { display: block; }
-section { padding-inline: clamp(1rem, 4vw, 2.5rem); }
+section { padding-inline: var(--gutter); }
 .band { padding-block: clamp(3rem, 7vw, 5.5rem); max-width: var(--max); margin-inline: auto; }
-.band-alt { background: var(--bg-alt); max-width: none; }
-.band-alt > * { max-width: var(--max); margin-inline: auto; }
+/* Full-width grey stripe whose content stays in the same centred column as .band,
+   with every child left-aligned to a single edge (no per-child centring). */
+.band-alt { background: var(--bg-alt); max-width: none; padding-inline: max(var(--gutter), calc(50% - var(--max) / 2 + var(--gutter))); }
 .band h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); margin: 0 0 0.5rem; }
 .section-lede { color: var(--muted); max-width: 62ch; font-size: 1.05rem; margin-top: 0; }
 .uses-note { margin-top: 1.8rem; }
@@ -130,6 +132,11 @@ pre {
 .band-alt .grid article { background: #fff; }
 .grid h3 { margin: 0 0 0.4rem; font-size: 1.08rem; }
 .grid p { margin: 0; color: var(--muted); font-size: 0.96rem; }
+
+/* Six "uses" cards lay out as a balanced 3-up, not auto-fit's lopsided 4+2. */
+.uses-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) { .uses-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .uses-grid { grid-template-columns: 1fr; } }
 
 /* ---------- Tabs ---------- */
 .tabs { margin: 2rem 0 2.4rem; }
