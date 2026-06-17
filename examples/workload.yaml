@@ -1,0 +1,20 @@
+# Expected Load — YAML and other `#`-comment formats.
+# Place the declaration in `#` comments above the element it describes.
+
+# expected-load:
+#   monthly_requests: 5_000_000
+#   request_duration_ms: 40
+#   confidence: high
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+
+---
+
+# Inline form for a second resource.
+# expected-load monthly_data_processed_gb=2_000 storage_gb=500
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: assets

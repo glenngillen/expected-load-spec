@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Expected Load — an open convention for declaring runtime load in source</title>
+  <meta name="description" content="Expected Load is an open, vendor-neutral convention for declaring the expected runtime load — request volume, traffic, token usage — of code and infrastructure directly in source, as a structured comment." />
+  <meta property="og:title" content="Expected Load Specification" />
+  <meta property="og:description" content="Declare expected runtime load in source. One uniform grammar across every language. Open and vendor-neutral." />
+  <meta property="og:type" content="website" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top">
+      <span class="brand-name">Expected&nbsp;Load</span>
+    </a>
+    <nav class="site-nav">
+      <a href="#why">Why</a>
+      <a href="#syntax">Syntax</a>
+      <a href="#fields">Fields</a>
+      <a href="#consume">For tools</a>
+      <a href="https://github.com/glenngillen/expected-load-spec/blob/main/SPEC.md">Spec</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <p class="eyebrow">Open specification · v1.0 · vendor-neutral</p>
+      <h1>Declare expected load<br />where the code lives.</h1>
+      <p class="lede">
+        Usage-based cost and capacity can't be read from code structure alone —
+        they depend on how often something runs and how much it processes.
+        <strong>Expected Load</strong> puts those numbers in a comment next to
+        the code, in one uniform shape across every language, so any tool can
+        read them.
+      </p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="https://github.com/glenngillen/expected-load-spec/blob/main/SPEC.md">Read the specification</a>
+        <a class="btn btn-ghost" href="#syntax">See the syntax</a>
+      </div>
+
+      <figure class="hero-code">
+        <figcaption>summarise.ts</figcaption>
+        <pre><code><span class="c">/**
+ * <span class="t">@expected-load</span>
+ *   <span class="k">monthly_calls</span>: <span class="n">100_000</span>
+ *   <span class="k">avg_input_tokens</span>: <span class="n">1_200</span>
+ *   <span class="k">avg_output_tokens</span>: <span class="n">400</span>
+ */</span>
+<span class="kw">export async function</span> summarise(text: <span class="ty">string</span>) {
+  <span class="c">// ...</span>
+}</code></pre>
+      </figure>
+    </section>
+
+    <section id="why" class="band">
+      <h2>Why inline?</h2>
+      <div class="grid">
+        <article>
+          <h3>Versioned &amp; reviewed</h3>
+          <p>The numbers travel with the code — same pull request, same history, same review.</p>
+        </article>
+        <article>
+          <h3>Discoverable</h3>
+          <p>They sit next to the relevant code, not in a parallel file someone forgets to update.</p>
+        </article>
+        <article>
+          <h3>Tool-agnostic</h3>
+          <p>One grammar across languages. No proprietary format, no lock-in — any tool can parse it.</p>
+        </article>
+        <article>
+          <h3>Zero footprint</h3>
+          <p>It's a comment. No dependency, no annotation library, no runtime cost, no new files.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="syntax" class="band band-alt">
+      <h2>The same declaration, every language</h2>
+      <p class="section-lede">
+        A <em>marker</em> — <code>expected-load</code> or <code>@expected-load</code>,
+        case-insensitive — introduces a declaration. Fields follow in
+        <em>block</em> form (one per line) or <em>inline</em> form (one line).
+        Only the surrounding comment framing changes by language.
+      </p>
+
+      <div class="tabs" data-tabs>
+        <div class="tab-strip" role="tablist" aria-label="Language examples">
+          <button role="tab" data-tab="tf" aria-selected="true">Terraform</button>
+          <button role="tab" data-tab="ts">TypeScript</button>
+          <button role="tab" data-tab="py">Python</button>
+          <button role="tab" data-tab="go">Go</button>
+          <button role="tab" data-tab="java">Java</button>
+          <button role="tab" data-tab="rs">Rust</button>
+          <button role="tab" data-tab="yaml">YAML</button>
+        </div>
+
+        <div class="tab-panel" data-panel="tf">
+          <pre><code><span class="c"># expected-load:
+#   <span class="k">monthly_requests</span>: <span class="n">5_000_000</span>
+#   <span class="k">request_duration_ms</span>: <span class="n">40</span></span>
+<span class="kw">resource</span> <span class="s">"example_function" "api"</span> {
+  name = <span class="s">"api"</span>
+}</code></pre>
+        </div>
+
+        <div class="tab-panel" data-panel="ts" hidden>
+          <pre><code><span class="c">/**
+ * <span class="t">@expected-load</span>
+ *   <span class="k">monthly_calls</span>: <span class="n">100_000</span>
+ *   <span class="k">avg_input_tokens</span>: <span class="n">1_200</span>
+ */</span>
+<span class="kw">export async function</span> summarise(text: <span class="ty">string</span>) {}</code></pre>
+        </div>
+
+        <div class="tab-panel" data-panel="py" hidden>
+          <pre><code><span class="c"># expected-load:
+#   <span class="k">monthly_calls</span>: <span class="n">100_000</span>
+#   <span class="k">avg_input_tokens</span>: <span class="n">1_200</span></span>
+<span class="kw">def</span> summarise(text: <span class="ty">str</span>) -> <span class="ty">str</span>:
+    <span class="kw">return</span> text[:<span class="n">280</span>]</code></pre>
+        </div>
+
+        <div class="tab-panel" data-panel="go" hidden>
+          <pre><code><span class="c">// expected-load:
+//   <span class="k">monthly_requests</span>: <span class="n">5_000_000</span>
+//   <span class="k">request_duration_ms</span>: <span class="n">40</span></span>
+<span class="kw">func</span> APIHandler(w http.ResponseWriter, r *http.Request) {}</code></pre>
+        </div>
+
+        <div class="tab-panel" data-panel="java" hidden>
+          <pre><code><span class="c">/**
+ * <span class="t">@expected-load</span>
+ *   <span class="k">monthlyRequests</span> = <span class="n">5_000_000</span>
+ *   <span class="k">requestDurationMs</span> = <span class="n">35</span>
+ */</span>
+<span class="kw">public void</span> handle() {}</code></pre>
+        </div>
+
+        <div class="tab-panel" data-panel="rs" hidden>
+          <pre><code><span class="c">/// expected-load:
+///   <span class="k">monthly_calls</span>: <span class="n">100_000</span>
+///   <span class="k">avg_input_tokens</span>: <span class="n">1_200</span></span>
+<span class="kw">pub fn</span> summarise(text: &<span class="ty">str</span>) -> <span class="ty">String</span> {}</code></pre>
+        </div>
+
+        <div class="tab-panel" data-panel="yaml" hidden>
+          <pre><code><span class="c"># expected-load:
+#   <span class="k">monthly_requests</span>: <span class="n">5_000_000</span>
+#   <span class="k">request_duration_ms</span>: <span class="n">40</span></span>
+<span class="kw">kind</span>: Deployment
+<span class="kw">metadata</span>:
+  <span class="kw">name</span>: api</code></pre>
+        </div>
+      </div>
+
+      <div class="rules">
+        <div class="rule">
+          <h4>Two forms</h4>
+          <p>Block form puts each field on its own line. Inline form puts them on one:
+          <code>expected-load monthly_requests=5_000_000 request_duration_ms=40</code>.</p>
+        </div>
+        <div class="rule">
+          <h4>Forgiving keys</h4>
+          <p>Keys normalize to <code>snake_case</code>, so
+          <code>monthly-requests</code>, <code>monthlyRequests</code> and
+          <code>monthly_requests</code> are the same field.</p>
+        </div>
+        <div class="rule">
+          <h4>Readable values</h4>
+          <p>Values are integers; <code>_</code> and <code>,</code> are allowed
+          as digit separators — write <code>5_000_000</code>, not
+          <code>5000000</code>.</p>
+        </div>
+        <div class="rule">
+          <h4>Optional provenance</h4>
+          <p>Add <code>confidence</code>, <code>source</code> and
+          <code>last_updated</code> to record how trustworthy the numbers are
+          and when they were checked.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="fields" class="band">
+      <h2>Core field vocabulary</h2>
+      <p class="section-lede">
+        A small, stable core so independent producers and consumers agree on
+        the common cases. The vocabulary is open — consumers may define more,
+        and must tolerate fields they don't recognize.
+      </p>
+
+      <h3 class="vocab-h">Service &amp; infrastructure</h3>
+      <table class="fields">
+        <thead><tr><th>Field</th><th>Unit</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>monthly_requests</code></td><td>req / month</td><td>Invocations per month (HTTP, queue messages, function calls).</td></tr>
+          <tr><td><code>request_duration_ms</code></td><td>ms</td><td>Average wall-clock duration of one request.</td></tr>
+          <tr><td><code>storage_gb</code></td><td>GB</td><td>Average data at rest.</td></tr>
+          <tr><td><code>monthly_data_processed_gb</code></td><td>GB / month</td><td>Data transferred or processed per month.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="vocab-h">Token &amp; model</h3>
+      <table class="fields">
+        <thead><tr><th>Field</th><th>Unit</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>monthly_calls</code></td><td>calls / month</td><td>Model or API invocations per month.</td></tr>
+          <tr><td><code>avg_input_tokens</code></td><td>tokens</td><td>Average input (prompt) tokens per call.</td></tr>
+          <tr><td><code>avg_output_tokens</code></td><td>tokens</td><td>Average output (completion) tokens per call.</td></tr>
+          <tr><td><code>avg_conversation_turns</code></td><td>turns</td><td>Average turns per conversation, for multi-turn workloads.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="vocab-h">Shared timing</h3>
+      <table class="fields">
+        <thead><tr><th>Field</th><th>Unit</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>requests_per_active_minute</code></td><td>req / min</td><td>Request rate while the workload is active — captures burstiness a monthly total misses.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="vocab-h">Meta fields</h3>
+      <table class="fields">
+        <thead><tr><th>Field</th><th>Values</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>version</code></td><td>integer (default 1)</td><td>Specification major version targeted.</td></tr>
+          <tr><td><code>confidence</code></td><td>low · medium · high</td><td>How sure the author is of the numbers.</td></tr>
+          <tr><td><code>source</code></td><td>manual · observed · estimated</td><td>Where the numbers came from.</td></tr>
+          <tr><td><code>last_updated</code></td><td>ISO 8601 date</td><td>When the numbers were last reviewed.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="consume" class="band band-alt">
+      <h2>For tool authors</h2>
+      <p class="section-lede">
+        A consumer reads a declaration in five steps — no host-language parser
+        required.
+      </p>
+      <ol class="steps">
+        <li><strong>Strip the framing.</strong> Remove the language's comment tokens (<code>#</code>, <code>//</code>, <code>/** … */</code>, <code>///</code>).</li>
+        <li><strong>Find the marker.</strong> If there isn't one, it isn't a declaration — that's normal, never an error.</li>
+        <li><strong>Collect fields</strong> from the inline remainder and the following lines.</li>
+        <li><strong>Normalize &amp; parse.</strong> Keys to <code>snake_case</code>; values to integers (ignoring <code>_</code>/<code>,</code>).</li>
+        <li><strong>Be lenient.</strong> Preserve unknown fields; report malformed values without dropping the rest.</li>
+      </ol>
+      <p class="section-lede">
+        The full processing model, diagnostics, and ABNF grammar are in the
+        <a href="https://github.com/glenngillen/expected-load-spec/blob/main/SPEC.md">specification</a>.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="foot-cols">
+      <div>
+        <p class="foot-name">Expected Load</p>
+        <p>Specification · v1.0</p>
+      </div>
+      <nav>
+        <a href="https://github.com/glenngillen/expected-load-spec/blob/main/SPEC.md">Specification</a>
+        <a href="https://github.com/glenngillen/expected-load-spec/tree/main/examples">Examples</a>
+        <a href="https://github.com/glenngillen/expected-load-spec/blob/main/CHANGELOG.md">Changelog</a>
+      </nav>
+    </div>
+    <p class="legal">
+      An open, vendor-neutral specification. Published under
+      <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> —
+      free to share and adapt with attribution.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
