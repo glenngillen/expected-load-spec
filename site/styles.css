@@ -72,6 +72,7 @@ section { padding-inline: clamp(1rem, 4vw, 2.5rem); }
 .band-alt > * { max-width: var(--max); margin-inline: auto; }
 .band h2 { font-size: clamp(1.5rem, 3.5vw, 2.1rem); margin: 0 0 0.5rem; }
 .section-lede { color: var(--muted); max-width: 62ch; font-size: 1.05rem; margin-top: 0; }
+.uses-note { margin-top: 1.8rem; }
 
 /* ---------- Hero ---------- */
 .hero {

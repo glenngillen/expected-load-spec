@@ -2,11 +2,12 @@
 
 **An open, vendor-neutral convention for declaring expected runtime load in source code.**
 
-Usage-based costs and capacity needs can't be read from code structure alone —
-they depend on *how often* something runs and *how much* it processes. Today
-those numbers live in spreadsheets, tickets, and out-of-band config that drift
-from the code. **Expected Load** puts them in a comment next to the code, in one
-uniform shape across every language, so any tool can read them.
+How often a piece of code runs, and how much it handles, is something the team
+knows but the codebase never records — so today those numbers live in
+spreadsheets, tickets, and out-of-band config that drift from the code.
+**Expected Load** writes them down in a comment next to the code, in one uniform
+shape across every language, so any tool can read them — to plan capacity,
+generate load tests, set alerts, estimate cost, and more.
 
 ```ts
 /**
@@ -28,8 +29,28 @@ resource "example_function" "api" {
 ```
 
 A declaration is just a comment, so it costs nothing at runtime and needs no
-new files, schema, or build step. A cost estimator, a capacity planner, a CI
-check, or an editor can read it without parsing the host language.
+new files, schema, or build step. A capacity planner, a load-test generator, a
+cost estimator, a CI check, or an editor can read it without parsing the host
+language.
+
+## What it's for
+
+Expected Load records one fact — how often code runs and how much it handles —
+and that fact feeds many tools. Cost is just one of them:
+
+- **Capacity & autoscaling** — size instances, replicas, and pools, and set
+  scale targets, to real expected volume.
+- **Load & performance testing** — generate realistic load, spike, and soak
+  scenarios; assert latency budgets.
+- **Reliability & alerting** — derive monitoring baselines and anomaly
+  thresholds; rank what matters for on-call.
+- **Architecture insight** — propagate volume through the call graph to find
+  hotspots, fan-out, and amplification.
+- **Cost & FinOps** — estimate spend, forecast budgets, and see cost deltas in
+  review.
+- **Sustainability** — turn the same load into an energy and carbon estimate.
+
+The specification defines the data; independent tools provide each of these.
 
 ## Why inline?
 

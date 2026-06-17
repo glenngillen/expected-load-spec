@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Expected Load — an open convention for declaring runtime load in source</title>
-  <meta name="description" content="Expected Load is an open, vendor-neutral convention for declaring the expected runtime load — request volume, traffic, token usage — of code and infrastructure directly in source, as a structured comment." />
+  <meta name="description" content="Expected Load is an open, vendor-neutral convention for declaring how often code runs and how much it handles — directly in source, as a structured comment — so tools can plan capacity, generate load tests, estimate cost, and more." />
   <meta property="og:title" content="Expected Load Specification" />
-  <meta property="og:description" content="Declare expected runtime load in source. One uniform grammar across every language. Open and vendor-neutral." />
+  <meta property="og:description" content="Declare expected runtime load in source — one grammar across every language. Plan capacity, test realistically, estimate cost, and more. Open and vendor-neutral." />
   <meta property="og:type" content="website" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -16,6 +16,7 @@
       <span class="brand-name">Expected&nbsp;Load</span>
     </a>
     <nav class="site-nav">
+      <a href="#uses">Uses</a>
       <a href="#why">Why</a>
       <a href="#syntax">Syntax</a>
       <a href="#fields">Fields</a>
@@ -29,11 +30,12 @@
       <p class="eyebrow">Open specification · v1.0 · vendor-neutral</p>
       <h1>Declare expected load<br />where the code lives.</h1>
       <p class="lede">
-        Usage-based cost and capacity can't be read from code structure alone —
-        they depend on how often something runs and how much it processes.
-        <strong>Expected Load</strong> puts those numbers in a comment next to
-        the code, in one uniform shape across every language, so any tool can
-        read them.
+        How often a piece of code runs, and how much it handles, is something
+        the team knows but the codebase never records.
+        <strong>Expected Load</strong> writes it down — in a comment next to the
+        code, one uniform shape across every language — so any tool can plan
+        capacity, generate load tests, set alerts, estimate cost, and more from
+        a single source of truth.
       </p>
       <div class="cta-row">
         <a class="btn btn-primary" href="https://github.com/glenngillen/expected-load-spec/blob/main/SPEC.md">Read the specification</a>
@@ -41,17 +43,55 @@
       </div>
 
       <figure class="hero-code">
-        <figcaption>summarise.ts</figcaption>
+        <figcaption>api.ts</figcaption>
         <pre><code><span class="c">/**
  * <span class="t">@expected-load</span>
- *   <span class="k">monthly_calls</span>: <span class="n">100_000</span>
- *   <span class="k">avg_input_tokens</span>: <span class="n">1_200</span>
- *   <span class="k">avg_output_tokens</span>: <span class="n">400</span>
+ *   <span class="k">monthly_requests</span>: <span class="n">5_000_000</span>
+ *   <span class="k">request_duration_ms</span>: <span class="n">40</span>
  */</span>
-<span class="kw">export async function</span> summarise(text: <span class="ty">string</span>) {
+<span class="kw">export function</span> handler(req: <span class="ty">Request</span>): <span class="ty">Response</span> {
   <span class="c">// ...</span>
 }</code></pre>
       </figure>
+    </section>
+
+    <section id="uses" class="band band-alt">
+      <h2>One declaration, many uses</h2>
+      <p class="section-lede">
+        Expected Load records a single fact — how often code runs and how much
+        it handles. That fact feeds a whole range of tools, each reading the
+        declaration it cares about. Cost is just one of them.
+      </p>
+      <div class="grid">
+        <article>
+          <h3>Capacity &amp; autoscaling</h3>
+          <p>Size instances, replicas, and pools — and set scale targets — to real expected volume instead of guesswork.</p>
+        </article>
+        <article>
+          <h3>Load &amp; performance testing</h3>
+          <p>Generate realistic load, spike, and soak scenarios, and assert latency budgets, straight from the declared numbers.</p>
+        </article>
+        <article>
+          <h3>Reliability &amp; alerting</h3>
+          <p>Derive monitoring baselines and anomaly thresholds, and rank what matters most for on-call.</p>
+        </article>
+        <article>
+          <h3>Architecture insight</h3>
+          <p>Propagate volume through the call graph to surface hotspots, fan-out, and amplification before they bite.</p>
+        </article>
+        <article>
+          <h3>Cost &amp; FinOps</h3>
+          <p>Estimate spend, forecast budgets, and see the cost impact of a change while it's still in review.</p>
+        </article>
+        <article>
+          <h3>Sustainability</h3>
+          <p>Turn the same load into an energy and carbon estimate, and inform where workloads should run.</p>
+        </article>
+      </div>
+      <p class="section-lede uses-note">
+        The specification defines the data; independent tools provide each of
+        these — one declaration, read many ways.
+      </p>
     </section>
 
     <section id="why" class="band">
@@ -235,8 +275,9 @@
     <section id="consume" class="band band-alt">
       <h2>For tool authors</h2>
       <p class="section-lede">
-        A consumer reads a declaration in five steps — no host-language parser
-        required.
+        Whatever a tool does with the data — a capacity planner, a load-test
+        generator, a cost estimator, a linter — it reads a declaration in the
+        same five steps, with no host-language parser required.
       </p>
       <ol class="steps">
         <li><strong>Strip the framing.</strong> Remove the language's comment tokens (<code>#</code>, <code>//</code>, <code>/** … */</code>, <code>///</code>).</li>
