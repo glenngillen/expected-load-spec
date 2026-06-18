@@ -219,7 +219,7 @@ carries only its defaults / meta fields).
 
 ## 8. Meta fields
 
-Four reserved fields describe the declaration itself rather than a load
+Five reserved fields describe the declaration itself rather than a load
 quantity. They are normalized like any other key (§6.2).
 
 | Field | Type | Default | Meaning |
@@ -228,11 +228,15 @@ quantity. They are normalized like any other key (§6.2).
 | `confidence` | enum | *(unset)* | How sure the author is of the numbers: `low`, `medium`, or `high`. |
 | `source` | enum | *(unset)* | Where the numbers came from: `manual`, `observed`, or `estimated`. |
 | `last_updated` | date | *(unset)* | When the numbers were last reviewed. **SHOULD** be an ISO 8601 date (`YYYY-MM-DD`). |
+| `model` | string | *(unset)* | Pins the model/SKU identifier the declared load applies to, for consumers that price per model. An explicit fallback for when the model cannot be inferred from the surrounding code (e.g. a dependency-injected client). Stored verbatim — identifiers carry dots, colons and slashes that **MUST NOT** be normalized. |
 
 - An out-of-range `confidence` or `source` value **MUST** be reported as a
   diagnostic and the field left unset; it **MUST NOT** abort the declaration.
 - `version` is advisory metadata for consumers; this version of the
   specification does not change behavior based on it.
+- A consumer that can resolve the model from code **SHOULD** prefer the
+  resolved value and treat a `model` that contradicts it as a diagnostic
+  (a stale pin), rather than silently overriding what the code runs.
 
 ## 9. Diagnostics (recommended)
 
