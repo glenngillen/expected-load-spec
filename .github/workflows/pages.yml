@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "site/**"
+      - "SPEC.md"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -30,6 +31,13 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
+
+      # Publish the canonical spec as fetchable markdown at /spec.md (the root
+      # SPEC.md stays the single source of truth; this just stages a copy into
+      # the artifact). Tools and agents acting on a missing-expected-load
+      # diagnostic can pull the authoritative format straight from the domain.
+      - name: Stage SPEC.md into the site
+        run: cp SPEC.md site/spec.md
 
       - name: Upload site/ as the Pages artifact
         uses: actions/upload-pages-artifact@v3
